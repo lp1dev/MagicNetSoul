@@ -1,0 +1,75 @@
+#!/usr/bin/python
+
+import commands
+import sys
+import time
+import os
+import subprocess
+
+refreshtime = 10
+globalusers = []
+ns_cmd = "tools/ns_who "
+debug = 0
+filename = "DarkNetSoul"
+realpath = os.path.realpath(sys.argv[0])[:-len(filename)];
+
+os.chdir(realpath)
+
+def isOpenable(filename):
+    try:
+        with open(filename, "r+"):
+            File = open(filename, "r+")
+    except IOError:
+        print("Unable to open "+filename)
+        sys.exit(1)
+    return 1
+
+def getUsers():
+    output = commands.getstatusoutput("ls users");
+    globalusers = output[1].split('\n');
+    if (debug):
+        print(globalusers)
+    if (len(globalusers[0]) < 1):
+        print("No user in database. Please run AddUser");
+        sys.exit(2)
+    return globalusers;
+    
+def checkcmd(returnvalue, errormsg):
+    if (returnvalue != 0):
+        print(errormsg)
+        sys.exit(returnvalue)
+
+def relog(user):
+    with open(os.devnull, "w") as fnull:
+        subprocess.call("killall "+user, shell=True, stderr=fnull)
+        subprocess.Popen("users/"+user, shell=True, stdout=fnull)
+ 
+def ping(user):
+    output = commands.getstatusoutput(ns_cmd+user)
+    if (debug):
+        print(output);
+    checkcmd(output[0], "Unable to connect to the NetSoul server");
+    if (len(output[1].strip()) < 2):
+        print("User "+user+" is not logged in. Trying to reconnect...")
+        return 0
+    else:
+        print("User "+user+" is logged_in")
+        return 1
+
+def checkAndLog(user):
+    if (ping(user) == 0):
+        relog(user)
+    print("--------")
+
+def mainloop():
+    globalusers = getUsers()
+    i = 0
+    while (i < len(globalusers)):
+        checkAndLog(globalusers[i])
+        i = i + 1;
+    time.sleep(refreshtime)
+
+def main():
+    while (42):
+        mainloop()
+main()

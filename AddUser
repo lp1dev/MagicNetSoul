@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+import os
+from tempfile import mkstemp
+from shutil import move
+from os import remove, close
+
+def replace(file_path, pattern, subst):
+    fh, abs_path = mkstemp()
+    new_file = open(abs_path,'w')
+    old_file = open(file_path)
+    for line in old_file:
+        new_file.write(line.replace(pattern, subst))
+    new_file.close()
+    close(fh)
+    old_file.close()
+    remove(file_path)
+    move(abs_path, file_path)
+
+login = raw_input("New user's PIE login (ex : login_l) : ")
+password = raw_input("New user's PIE password (Socks pass) :")
+os.system("cp tools/tumsoul users/"+login)
+replace("users/"+login, "user = \"\"", "user="+"'"+login+"'")
+replace("users/"+login, "password = \"\"", "password = "+"'"+password+"'")
+os.system("chmod +x users/"+login)
