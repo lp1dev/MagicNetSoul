@@ -6,7 +6,7 @@ import socket,md5,string,time,os,sys,random,urllib
 tumsoul_server = ('ns-server.epitech.eu', 4242)
 location = urllib.quote("Tumsoul 0.3.3")
 useragent = urllib.quote("tumsoul v0.3 [%d]"%os.getpid())
-states = ["actif", "away"]
+states = ["actif"]
 delays = [ 10 ] + [ 4242 ]*10 + [ 424 ]*10
 user = ""
 password = ""
