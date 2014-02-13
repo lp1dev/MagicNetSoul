@@ -46,10 +46,11 @@ def relog(user):
  
 def ping(user):
     output = commands.getstatusoutput(ns_cmd+user)
+    outputPing = commands.getstatusoutput("ping -n 1 8.8.8.8")
     if (debug):
         print(output);
     checkcmd(output[0], "Unable to connect to the NetSoul server");
-    if (len(output[1].strip()) < 2):
+    if (len(output[1].strip()) < 2) or (outputPing[0] != 0):
         print("User "+user+" is not logged in. Trying to reconnect...")
         return 0
     else:
